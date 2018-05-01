@@ -1,11 +1,24 @@
 #include "aes.h"
 
+constexpr uint8_t AES::S_BOX[];
+
 AES::AES()
 {
 
 }
 
-void AES::shiftRows(uint8_t state[4][4]) {
+void AES::subBytes(uint8_t state[4][4])
+{
+    for (uint8_t i = 0; i < 4; i++) {
+        for (uint8_t j = 0; j < 4; j++) {
+            state[i][j] = S_BOX[state[i][j]];
+        }
+    }
+}
+
+
+void AES::shiftRows(uint8_t state[4][4])
+{
     for(int i = 1; i < 4; i++) {
         uint8_t row[4];
         for(int j = 0; j < 4; j++) {
@@ -17,7 +30,9 @@ void AES::shiftRows(uint8_t state[4][4]) {
     }
 }
 
-void AES::mixColumns(uint8_t state[4][4]) {
+
+void AES::mixColumns(uint8_t state[4][4])
+{
     uint8_t h;
     /* The array 'col' is simply a copy of the input array 'state'
      * The array 'col2' is each element of the array 'a' multiplied by 2
