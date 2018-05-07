@@ -44,12 +44,13 @@ private:
                         0xA0, 0xE0, 0x3B, 0x4D, 0xAE, 0x2A, 0xF5, 0xB0, 0xC8, 0xEB, 0xBB, 0x3C, 0x83, 0x53, 0x99, 0x61,
                         0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D
                 };
-    static void AddRoundKey (uint8_t tab[4][4], const uint8_t roundKey[4][4]);
+
 public:
     Aes();
-    static void subBytes (uint8_t tab[4][4]);
-    void shiftRows(uint8_t state[4][4]);
-    void mixColumns(uint8_t state[4][4]);
+    static uint8_t subBytes (uint8_t tab[4][4]);
+    static uint8_t addRoundKey (uint8_t tab[4][4], const uint8_t roundKey[4][4]);
+    static uint8_t shiftRows(uint8_t state[4][4]);
+    static uint8_t mixColumns(uint8_t state[4][4]);
 };
 
 #endif // AES_H
