@@ -67,7 +67,7 @@ uint8_t AES::mixColumns(uint8_t state[4][4])
     return state;
 }
 
-uint8_t AES::encryptionProcess(uint8_t state[4][4], uint8_t cypherKey[4][4])
+uint8_t AES::encryptionProcess(uint8_t state[4][4], uint8_t cipherKey[4][4])
 {
     // Initial round
     addRoundKey(state, cypherKey);
@@ -84,5 +84,10 @@ uint8_t AES::encryptionProcess(uint8_t state[4][4], uint8_t cypherKey[4][4])
     shiftRows(state);
     addRoundKey(state, cypherKey);
 
-    return state; // state = cypherText
+    return state; // state = cipherText
+}
+
+uint8_t AES::KeySchedule(uint8_t cipherKey[4][4]) {
+    // Première ligne
+
 }

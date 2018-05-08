@@ -42,7 +42,8 @@ public:
     static uint8_t addRoundKey(uint8_t tab[4][4], const uint8_t roundKey[4][4]);
     static uint8_t shiftRows(uint8_t state[4][4]);
     static uint8_t mixColumns(uint8_t state[4][4]);
-    uint8_t encryptionProcess(uint8_t state[4][4], uint8_t cypherKey[4][4]);
+    uint8_t encryptionProcess(uint8_t state[4][4], uint8_t cipherKey[4][4]);
+    uint8_t KeySchedule(uint8_t cipherKey[4][4]);
 };
 
 #endif // AES_H
