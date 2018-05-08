@@ -67,7 +67,7 @@ uint8_t AES::mixColumns(uint8_t state[4][4])
     return state;
 }
 
-uint8_t AES::encryptionProcess(uint8_t state[4][4], uint8_t cipherKey[4][4])
+uint8_t AES::encryptionProcess(uint8_t state[4][4], uint8_t cypherKey[4][4])
 {
     // Initial round
     addRoundKey(state, cypherKey);
@@ -84,10 +84,29 @@ uint8_t AES::encryptionProcess(uint8_t state[4][4], uint8_t cipherKey[4][4])
     shiftRows(state);
     addRoundKey(state, cypherKey);
 
-    return state; // state = cipherText
+    return state; // state = cypherText
 }
 
-uint8_t AES::KeySchedule(uint8_t cipherKey[4][4]) {
-    // Première ligne
+uint8_t AES::keySchedule(uint8_t cypherKey[4][4])
+{
+    uint8_t key[4][11*4];
 
+    for(int i = 0; i < 4; i++) {
+        for(int j = 0; j < 4; j++) {
+            key[i][j] = cypherKey[i][j];
+        }
+    }
+
+    for(int i = 0; i < 4; i++) {
+        for(int j = 4; j < 11*4; j++) {
+            if(j % 4 == 0) { // 1ère colonne de chaque bloc
+                key[i][j] = cypherKey[i][(j-3)%4] ^ S_BOX[key[i][j-1]] ^ R_CON[i];
+            } else { // les autres colonnes de chaque bloc
+                key[i][j] = cypherKey[i][j%4] ^ key[i][j-1];
+            }
+
+        }
+    }
+
+    return key;
 }
