@@ -6,6 +6,11 @@
 class AES
 {
 private:
+    uint8_t state_[4][4];
+    uint8_t roundKey_[4][4];
+    uint8_t cypherKey_[4][4];
+    uint8_t key_[4][11*4];
+
     static constexpr uint8_t S_BOX [256] =
     {
         0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76,
@@ -36,19 +41,19 @@ private:
 
 
 public:
-    AES();
+    AES(uint8_t state[4][4], uint8_t roundKey[4][4], uint8_t cypherKey[4][4]);
 
     // Encryption process
     //static uint8_t (&subBytes(uint8_t (&tab)[4][4]))[4][4]; // solution ?
     //static uint8_t** subBytes(uint8_t tab[4][4]); // ne fonctionne pas mais pas loin...
-    static uint8_t subBytes(uint8_t tab[4][4]);
-    static uint8_t addRoundKey(uint8_t tab[4][4], const uint8_t roundKey[4][4]);
-    static uint8_t shiftRows(uint8_t state[4][4]);
-    static uint8_t mixColumns(uint8_t state[4][4]);
-    uint8_t encryptionProcess(uint8_t state[4][4], uint8_t cypherKey[4][4]);
+    void subBytes();
+    void addRoundKey();
+    void shiftRows();
+    void mixColumns();
+    void encryptionProcess();
 
     // Key Schedule
-    uint8_t keySchedule(uint8_t cypherKey[4][4]);
+    void keySchedule();
 
 };
 

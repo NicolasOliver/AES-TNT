@@ -4,7 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.cpp \
-    aes.cpp
+    aes.cpp \
 
 HEADERS += \
     aes.h
