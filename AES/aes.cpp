@@ -3,13 +3,12 @@
 constexpr uint8_t AES::S_BOX[];
 constexpr uint8_t AES::R_CON[];
 
-AES::AES(uint8_t state[4][4], uint8_t roundKey[4][4], uint8_t cypherKey[4][4])
+AES::AES(uint8_t state[4][4], uint8_t cipherKey[4][4])
 {
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             state_[i][j] = state[i][j];
-            roundKey_[i][j] = roundKey[i][j];
-            cypherKey_[i][j] = cypherKey[i][j];
+            cipherKey_[i][j] = cipherKey[i][j];
         }
     }
 }
@@ -89,23 +88,23 @@ void AES::encryptionProcess()
     shiftRows();
     addRoundKey();
 
-    // state = cypherText
+    // state = cipherText
 }
 
 void AES::keySchedule()
 {
     for(int i = 0; i < 4; i++) {
         for(int j = 0; j < 4; j++) {
-            key_[i][j] = cypherKey_[i][j];
+            key_[i][j] = cipherKey_[i][j];
         }
     }
 
     for(int i = 0; i < 4; i++) {
         for(int j = 4; j < 11*4; j++) {
             if(j % 4 == 0) { // 1ère colonne de chaque bloc
-                key_[i][j] = cypherKey_[i][(j-3)%4] ^ S_BOX[key_[i][j-1]] ^ R_CON[j-4];
+                key_[i][j] = cipherKey_[i][(j-3)%4] ^ S_BOX[key_[i][j-1]] ^ R_CON[j-4];
             } else { // les autres colonnes de chaque bloc
-                key_[i][j] = cypherKey_[i][j%4] ^ key_[i][j-1];
+                key_[i][j] = cipherKey_[i][j%4] ^ key_[i][j-1];
             }
 
         }

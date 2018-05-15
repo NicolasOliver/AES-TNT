@@ -8,7 +8,7 @@ class AES
 private:
     uint8_t state_[4][4];
     uint8_t roundKey_[4][4];
-    uint8_t cypherKey_[4][4];
+    uint8_t cipherKey_[4][4];
     uint8_t key_[4][11*4];
 
     static constexpr uint8_t S_BOX [256] =
@@ -41,7 +41,7 @@ private:
 
 
 public:
-    AES(uint8_t state[4][4], uint8_t roundKey[4][4], uint8_t cypherKey[4][4]);
+    AES(uint8_t state[4][4], uint8_t cipherKey[4][4]);
 
     // Encryption process
     //static uint8_t (&subBytes(uint8_t (&tab)[4][4]))[4][4]; // solution ?
