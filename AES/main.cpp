@@ -23,7 +23,8 @@ int main(int argc, char *argv[])
 
     AES toto(state,cipherKey);
 
-    toto.AES::encryptionProcess();
+    //toto.AES::encryptionProcess();
+    toto.keySchedule();
 
     return 0;
 }

@@ -23,6 +23,13 @@ void AES::subBytes()
     //return tab;
 }
 
+void AES::subBytesKey()
+{
+    for (int i = 0; i < 4; i++) {
+        colRot_[i] = S_BOX[colRot_[i]];
+    }
+}
+
 void AES::addRoundKey()
  {
     for (uint8_t i = 0; i < 4; i++) {
@@ -44,6 +51,15 @@ void AES::shiftRows()
             state_[i][j] = row[(i + j) % 4];
         }
     }
+}
+
+void AES::rotWord() {
+    uint8_t val = colRot_[0];
+    for(int i = 0; i < 3; i++) {
+        colRot_[i] = colRot_[i+1];
+    }
+    colRot_[3] = val;
+    //return key;
 }
 
 
@@ -102,11 +118,27 @@ void AES::keySchedule()
     for(int i = 0; i < 4; i++) {
         for(int j = 4; j < 11*4; j++) {
             if(j % 4 == 0) { // 1ère colonne de chaque bloc
-                key_[i][j] = cipherKey_[i][(j-3)%4] ^ S_BOX[key_[i][j-1]] ^ R_CON[j-4];
+                //key_[i][j] = cipherKey_[i][(j-3)%4] ^ S_BOX[key_[i][j-1]] ^ R_CON[j-4];
+                for(int k = 0; k < 4; k++) {
+                    colRot_[k] = key_[k][j-1];
+                    //std::cout << j << " : " << std::hex << static_cast<int>(colRot_[k]) << std::endl;
+                }
+                rotWord();
+                subBytesKey();
+                key_[i][j] = key_[i][j-4] ^ col_[i] ^ R_CON[j-4];
+                std::cout << i << ", " << j << " : " << std::hex << static_cast<int>(key_[i][j]) << std::endl;
             } else { // les autres colonnes de chaque bloc
                 key_[i][j] = cipherKey_[i][j%4] ^ key_[i][j-1];
             }
+        }
+    }
 
+
+
+    for(int i = 0; i < 4; i++) {
+        for(int j = 0; j < 15*4; j++) {
+//            std::cout << std::hex << static_cast<int>(key_[i][j]) << std::endl;
+            //std::cout << static_cast<int>(cipherKey_[i][j]) << std::endl;
         }
     }
 }
