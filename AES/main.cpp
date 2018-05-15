@@ -21,10 +21,8 @@ int main(int argc, char *argv[])
         {0x16,0xa6,0x88,0x3c}
     };
 
-    AES toto(state,cipherKey);
+    AES aes(state,cipherKey);
 
-    //toto.AES::encryptionProcess();
-    toto.keySchedule();
-
+    aes.encryptionProcess();
     return 0;
 }

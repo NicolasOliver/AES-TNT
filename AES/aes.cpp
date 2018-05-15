@@ -1,4 +1,5 @@
 #include "aes.h"
+#define xtime(x)   ((x<<1) ^ (((x>>7) & 1) * 0x1b))
 
 constexpr uint8_t AES::S_BOX[];
 constexpr uint8_t AES::R_CON[4][10];
@@ -30,12 +31,13 @@ void AES::subBytesKey()
     }
 }
 
-void AES::addRoundKey()
+void AES::addRoundKey(int j)
  {
-    for (uint8_t i = 0; i < 4; i++) {
-        uint32_t* clefPtr = (uint32_t*) roundKey_[i];
-        uint32_t* statePtr = (uint32_t*) state_[i];
-        *statePtr ^= *clefPtr;
+    j = j*4;
+    for(int i = 0; i < 4; i++) {
+        for(int k = 0; k < 4; k++) {
+            state_[i][k] ^= key_[i][k+j];
+        }
     }
     //return state;
  }
@@ -62,28 +64,17 @@ void AES::rotWord() {
     //return key;
 }
 
-
 void AES::mixColumns()
 {
-    uint8_t h;
-    /* The array 'col' is simply a copy of the input array 'state'
-     * The array 'col2' is each element of the array 'a' multiplied by 2
-     * in Rijndael's Galois field
-     * col[n] ^ col2[n] is element n multiplied by 3 in Rijndael's Galois field */
-
-    for(int i = 0; i < 4; i++) {
-        uint8_t col[4] = {state_[0][i], state_[1][i], state_[2][i], state_[3][i]};
-        uint8_t col2[4];
-
-        h = (uint8_t)((int8_t)state_[i][i] >> 7); /* arithmetic right shift, thus shifting in either zeros or ones */
-        col2[i] = state_[i][i] << 1; /* implicitly removes high bit */
-        col2[i] ^= 0x1B & h; /* Rijndael's Galois field */
-        /* h is 0xff if the high bit is set, 0 otherwise */
-
-        state_[0][i] = col2[0] ^ col[3] ^ col[2] ^ col2[1] ^ col[1]; /* 2 * a0 + a3 + a2 + 3 * a1 */
-        state_[1][i] = col2[1] ^ col[0] ^ col[3] ^ col2[2] ^ col[2]; /* 2 * a1 + a0 + a3 + 3 * a2 */
-        state_[2][i] = col2[2] ^ col[1] ^ col[0] ^ col2[3] ^ col[3]; /* 2 * a2 + a1 + a0 + 3 * a3 */
-        state_[3][i] = col2[3] ^ col[2] ^ col[1] ^ col2[0] ^ col[0]; /* 2 * a3 + a2 + a1 + 3 * a0 */
+    int i;
+    unsigned char Tmp,Tm,t;
+    for(i = 0; i < 4; i++) {
+        t = state_[0][i];
+        Tmp = state_[0][i] ^ state_[1][i] ^ state_[2][i] ^ state_[3][i] ;
+        Tm = state_[0][i] ^ state_[1][i] ; Tm = xtime(Tm); state_[0][i] ^= Tm ^ Tmp ;
+        Tm = state_[1][i] ^ state_[2][i] ; Tm = xtime(Tm); state_[1][i] ^= Tm ^ Tmp ;
+        Tm = state_[2][i] ^ state_[3][i] ; Tm = xtime(Tm); state_[2][i] ^= Tm ^ Tmp ;
+        Tm = state_[3][i] ^ t ; Tm = xtime(Tm); state_[3][i] ^= Tm ^ Tmp ;
     }
 }
 
@@ -92,21 +83,28 @@ void AES::encryptionProcess()
     keySchedule();
 
     // Initial round
-    addRoundKey();
+    addRoundKey(0);
 
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < 9; i++) {
+        //std::cout << "ITERATION " << i << std::endl;
         subBytes();
         shiftRows();
         mixColumns();
-        addRoundKey();
+        addRoundKey(i+1);
     }
 
     // Final round
     subBytes();
     shiftRows();
-    addRoundKey();
+    addRoundKey(10);
 
-    // state = cipherText
+    std::cout << "Output CipherText :" << std::endl;
+    for(int ii = 0; ii < 4; ii++) {
+         for(int jj = 0; jj < 4; jj++) {
+            std::cout << std::setfill('0') << std::setw(2) << std::hex << std::uppercase << static_cast<int>(state_[ii][jj]) << " ";
+        }
+          std::cout << std::endl;
+    }
 }
 
 void AES::keySchedule()
@@ -132,9 +130,11 @@ void AES::keySchedule()
         }
     }
 
-    for(int j = 0; j < 11*4; j++) {
-         for(int i = 0; i < 4; i++) {
-            std::cout << i << ", " << j << " : " << std::hex << static_cast<int>(key_[i][j]) << std::endl;
+    std::cout << "Output Key Schedule :" << std::endl;
+    for(int ii = 0; ii < 4; ii++) {
+         for(int jj = 0; jj < 11*4; jj++) {
+            std::cout << std::setfill('0') << std::setw(2) << std::hex << std::uppercase << static_cast<int>(key_[ii][jj]) << " ";
         }
+          std::cout << std::endl;
     }
 }

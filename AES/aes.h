@@ -2,15 +2,14 @@
 #define AES_H
 
 #include <iostream>
+#include <iomanip>
 
 class AES
 {
 private:
     uint8_t state_[4][4];
-    uint8_t roundKey_[4][4];
     uint8_t cipherKey_[4][4];
     uint8_t key_[4][11*4];
-    uint8_t col_[4];
     uint8_t colRot_[4];
 
     static constexpr uint8_t S_BOX [256] =
@@ -60,7 +59,7 @@ public:
     void subBytes();
     void subBytesKey();
     void rotWord();
-    void addRoundKey();
+    void addRoundKey(int j);
     void shiftRows();
     void mixColumns();
     void encryptionProcess();
